@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+
+    <meta charset="UTF-8">
+    <title>mvc</title>
+    <style>table,
+    td {
+        border: 1px solid #333;
+        margin-top: 200px;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 25px;
+    }
+
+    body{
+        background-image: url("https://wallpaperaccess.com/full/646452.jpg");
+        background-size: 100%;
+    }
+    thead,
+    tfoot {
+        background-color: rgb(0,0,0);
+        color: #fff;
+    }
+    </style>
+    <style>
+
+        table, th, td {
+            border: 1px solid cadetblue;
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+<div align="center">
+
+<div sec:authorize="isAuthenticated()">
+    Welcome  <b><span sec:authentication="name"> Username </span> </b>
+    <i><span sec:authentication="principal.authorities">Roles</span> </i>
+</div>
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="Logout">
+    </form>
+<table class="table table-bordered ">
+    <thead class="table-white">
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Company name</th>
+        <th scope="col">Located country</th>
+        <th scope="col" style="color:beige">More</th>
+        <th sec:authorize=" hasAnyAuthority('ADMIN')" scope="col">Update</th>
+        <th sec:authorize="hasAnyAuthority('ADMIN')" scope="col">Delete</th>
+<!--        <th sec:authorize="hasAnyAuthority('ADMIN')">Actions</th>-->
+
+    </tr>
+    </thead>
+    <tbody class="table-success">
+    <tr th:each="company : ${allCompany}">
+        <td th:text="${company.id}"></td>
+        <td th:text="${company.companyName}"></td>
+        <td th:text="${company.locatedCountry}"></td>
+
+        <td sec:authorize="hasAnyAuthority('ADMIN','INSTRUCTOR')">
+            <a th:href="@{/courses/allCourses/{id}(id=${company.id})}">
+            <button style="height: 40px; width: 90px; background-color:paleturquoise;">MORE</button>
+        </a>
+        </td>
+        <td sec:authorize="hasAnyAuthority('ADMIN','EDITOR')">
+            <a th:href="@{/{id}/edit(id=${company.id})}"> EDIT</a>
+
+        </td>
+
+        <td>
+            <form sec:authorize="hasAnyAuthority('ADMIN')"
+                  th:method="DELETE" th:action="@{/{id}/delete(id=${company.id})}">
+                <button style="height: 40px; width: 80px; background-color:whitesmoke;">delete</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<br><br><br><br>
+
+<input sec:authorize="hasAnyAuthority('ADMIN')" style=" display-model: block; margin:auto; font-size:30px;" type="button" value="Add company"
+       onclick="window.location.href = 'new'">
+</div>
+</body>
+</html>
+
